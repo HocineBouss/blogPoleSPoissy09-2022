@@ -1,0 +1,25 @@
+Route :
+    - elle se déclare soit en attribut dans le controller au dessus de la fonction qu'elle executera
+    exemple : 
+        #[Route('/articles', name: 'app_articles')]
+
+    - elle peut aussi se déclarer dans le fichier routes.yaml dans ce cas il sera nécessaire d'indiquer la fonction a executer 
+    exemple : 
+        app_home:  => le nom de la route
+            path: /  => la route à mettre dans l'url
+            controller: App\Controller\HomeController::index => la fonction a executer
+
+Controller : 
+        - il se crée en passant par la commande : symfony console make:controller 
+        - une fois crée on trouve une premiere fonciton par default qu'on doit ajuster selon notre besoin
+        - dans la focntion on fait le traitement dont on à besoin par exemple (recuperer des données...) pour pouvoir les afficher sur une page
+        - la page à afficher sera en retour de la fonction en premier parametre de la fonction render('page.html.twig')
+        - en deuxieme parametre de render() vient un tableau associatif avec des clés et des valeurs. la clé sera de notre choix et la variable a utiliser dans la page twig en question, et la valeur sera son contenu. attention a bien respecter une certaine convention de nommage, en gros n'appelons pas une clé 'chat' alors que c'est un 'chien'
+
+Templates: 
+        - par defaut, un dossier sera crée à chaque création d'un controller avec à l'interieur un premier template et un contenu à modifier selon le besoin
+        - on crée manuellement une page twig à chaque fois qu'il sera necessaire de le faire
+
+pratique:
+    créez un controlleur Toto via lequel vous allez m'afficher une page toto.html.twig dans laquel il y aura les 3 dernier articles sous forme de card
+    
