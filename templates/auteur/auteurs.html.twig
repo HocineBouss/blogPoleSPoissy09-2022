@@ -1,0 +1,32 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<h2>Les Auteurs :</h2>
+
+<table class="table text-center">
+    <thead class="thead-dark">
+        <tr>
+            <th>nom</th>
+            <th>prénom</th>
+            <th>date de naissance</th>
+            <th>action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for auteur in auteurs %}
+        <tr>
+            <td>{{auteur.nom}}</td>
+            <td>{{auteur.prenom}}</td>
+            <td>{{auteur.dateDeNaissance | date("d/m/Y") }} </td>
+            <td>
+                <a class="btn btn-primary" href="{{ path('app_auteur', {id: auteur.id}) }}">voir</a>
+                <a class="btn btn-success" href="{{ path('app_auteur_edit', {id: auteur.id}) }}"> éditer </a>
+                <a class="btn btn-danger" href="{{ path('app_auteur_supprimer', {id: auteur.id}) }}"> supprimer </a>
+
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+{% endblock %}
