@@ -9,7 +9,14 @@
             <h3> {{ article.titre }}</h3>
             <h6> crée le : {{ article.dateDeCreation | date("d/m/Y \à H\\hi") }}</h6>
             <h6> modifié le :</h6>
-            <h6> auteur de l'article </h6>
+            <h6> 
+                {% if article.auteur %}
+                écrit par: 
+                    {{ article.auteur.fullName}}
+                {% else %}
+                    auteur : Anonymous
+                {% endif %}
+            </h6>
             <p> {{ article.contenu }} </p>
         </div>
     </div>

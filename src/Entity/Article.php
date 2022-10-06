@@ -26,6 +26,12 @@ class Article
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateDeModification = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
+
+    #[ORM\ManyToOne(inversedBy: 'articles')]
+    private ?Auteur $auteur = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,4 +84,30 @@ class Article
 
         return $this;
     }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getAuteur(): ?Auteur
+    {
+        return $this->auteur;
+    }
+
+    public function setAuteur(?Auteur $auteur): self
+    {
+        $this->auteur = $auteur;
+
+        return $this;
+    }
+
+
 }

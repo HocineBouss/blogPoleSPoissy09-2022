@@ -9,7 +9,9 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 
 
@@ -44,11 +46,10 @@ class ArticleController extends AbstractController
             'article' => $article
         ]);
 
-    }   
-
+    }
 
     #[Route('/article_ajout', name: 'app_article_ajout')]
-    public function ajout(Request $request, ManagerRegistry $doctrine)
+    public function ajout(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger)
     {
         // on crée un objet Article
         $article = new Article(); // une instanciation de class
@@ -60,15 +61,38 @@ class ArticleController extends AbstractController
 
         if( $form->isSubmitted() && $form->isValid())
         {
+
+            if($form->get('file')->getData())
+            {    
+                // on recupere la donnée du champ file du formulaire
+                $file = $form->get('file')->getData();
+
+                // le slug permet de transformer une chaine de caracteres ex : ('le mot clé' => 'le-mot-cle')
+                // on modifie le nom de l'image en y mettant le titre sous forme de slug (sans espaces, accents...) puis un id generé tout en gardant l'extension de l'image
+                $fileName = $slugger->slug($article->getTitre()) . uniqid() . '.' . $file->guessExtension();
+
+                try{
+                    // on deplace notre image dans le dossier parametré dans config/services.yaml dans la partie parameters
+                    $file->move($this->getParameter('article_image'), $fileName );
+
+                }catch(FileException $e)
+                {
+                    // gérer les exceptions en cas d'erreur durant l'upload
+                }
+
+                // on affecte fileName à l'article pour l'enregistrer an bdd
+                $article->setImage($fileName);
+            }
+            
             // on affecte la date car elle ne s'ajoute pas depuis le formulaire
             $article->setDateDeCreation(new DateTime("now"));
-            
             // on recupere le manager de doctrine
             $manager = $doctrine->getManager();
 
             $manager->persist($article);
 
             $manager->flush();
+
 
             return $this->redirectToRoute('app_articles');
         }
@@ -79,9 +103,8 @@ class ArticleController extends AbstractController
     }
 
 
-
     #[Route('/article_editer/{id<\d+>}', name: 'app_article_editer')]
-    public function edit(ManagerRegistry $doctrine, $id, Request $request)
+    public function edit(ManagerRegistry $doctrine, $id, Request $request, SluggerInterface $slugger )
     {
         $article = $doctrine->getRepository(Article::class)->find($id);
 
@@ -92,6 +115,31 @@ class ArticleController extends AbstractController
 
         if( $form->isSubmitted() && $form->isValid())
         {
+
+            if($form->get('file')->getData())
+            {    
+                // on recupere la donnée du champ file du formulaire
+                $file = $form->get('file')->getData();
+
+                // le slug permet de transformer une chaine de caracteres ex : ('le mot clé' => 'le-mot-cle')
+                // on modifie le nom de l'image en y mettant le titre sous forme de slug (sans espaces, accents...) puis un id generé tout en gardant l'extension de l'image
+                $fileName = $slugger->slug($article->getTitre()) . uniqid() . '.' . $file->guessExtension();
+
+                try{
+                    // on deplace notre image dans le dossier parametré dans config/services.yaml dans la partie parameters
+                    $file->move($this->getParameter('article_image'), $fileName );
+
+                }catch(FileException $e)
+                {
+                    // gérer les exceptions en cas d'erreur durant l'upload
+                }
+
+                // on affecte fileName à l'article pour l'enregistrer an bdd
+                $article->setImage($fileName);
+            }
+
+
+
             // on affecte la date car elle ne s'ajoute pas depuis le formulaire
             $article->setDateDeModification(new DateTime("now"));
             
