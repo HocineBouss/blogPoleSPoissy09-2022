@@ -18,3 +18,12 @@ biographie: text
 
 6) faites en sorte de pouvoir supprimer un auteur
 
+
+Relations:
+
+1 - créez une entité Commentaire avec les proprietés :
+"contenu" type: text
+"dateDeCreation" type : datetime 
+puis reliez la à l'entité Article.
+
+2 - Le but est de pouvoir commenter les articles et donc avoir sous chacun de ces derniers un espace dédier mais aussi l'affichage des commentaire qui y sont liés

@@ -29,4 +29,20 @@
             </div>
         </div>
     </div>
+
+    <div>
+        <h3>Commentaires :</h3>
+        {{ form(formCommentaire) }}
+    </div>
+
+    {% for commentaire in article.commentaires %}
+            <div class="border-primary border rounded container mb-2">
+                <p><a href="{{ path('app_commentaire_update', {id: commentaire.id}) }}" >modifier</a></p>
+                <p><a class="text-danger" href="{{ path('app_commentaire_supprimer', {id: commentaire.id}) }}" >supprimer</a></p>
+                <h6> écrit par :</h6>
+                <h6> publié le: {{ commentaire.dateDeCreation | date("d/m/Y \à H\\mi") }} </h6>
+                <p> {{ commentaire.contenu }} </p>
+            </div>
+    {% endfor %}
+
 {% endblock %}

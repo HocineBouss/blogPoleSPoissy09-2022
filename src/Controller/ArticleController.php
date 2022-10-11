@@ -5,6 +5,8 @@ namespace App\Controller;
 use DateTime;
 use App\Entity\Article;
 use App\Form\ArticleType;
+use App\Entity\Commentaire;
+use App\Form\CommentaireType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +36,7 @@ class ArticleController extends AbstractController
 
    
     #[Route('/article_{id<\d+>}', name: 'app_article')]
-    public function unArticle(ManagerRegistry $doctrine, $id)
+    public function unArticle(ManagerRegistry $doctrine, $id, Request $request)
     {
         // on récuper l'article dont l'id est celui dans l'url
         $article = $doctrine->getRepository(Article::class)->find($id);
@@ -42,9 +44,33 @@ class ArticleController extends AbstractController
         //on verifie si je recupere bien un article
         //dd($article);
 
-        return $this->render('article/unArticle.html.twig', [
-            'article' => $article
-        ]);
+        /************** traitement des commentaires ***********************/
+            $commentaire = new Commentaire();
+
+            $form = $this->createForm(CommentaireType::class, $commentaire);
+
+            $form->handleRequest($request);
+
+            if( $form->isSubmitted() && $form->isValid())
+            {
+                // on affecte la date de cretation automatiquement 
+                $commentaire->setDateDeCreation(new Datetime('now'))
+                            // on lie le commentaire à l'article en cours
+                            ->setArticle($article);
+                 // on envoie en bdd avec le manager
+                $manager = $doctrine->getManager();
+                $manager->persist($commentaire);
+                $manager->flush();
+                // on redirige vers la même page en lui indiquant le même id
+                return $this->redirectToRoute('app_article', ['id' => $id]);
+            }
+
+        /**************************** fin commentaires */
+
+            return $this->render('article/unArticle.html.twig', [
+                'article' => $article,
+                'formCommentaire' => $form->createView()
+            ]);
 
     }
 
